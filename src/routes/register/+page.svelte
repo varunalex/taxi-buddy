@@ -15,7 +15,7 @@
 		error = '';
 		
 		// Validate secure key
-		if (secureKey !== '2019+') {
+		if (secureKey !== import.meta.env.VITE_REGISTRATION_SECURE_KEY) {
 			error = 'Invalid secure key';
 			isLoading = false;
 			return;

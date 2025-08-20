@@ -13,7 +13,7 @@
 	let customEndDate = $state<string>('');
 	
 	// Global wear and tear rate (LKR per km)
-	const WEAR_AND_TEAR_RATE = 15;
+	const WEAR_AND_TEAR_RATE = Number(import.meta.env.VITE_WEAR_AND_TEAR_RATE) || 15;
 	
 	// Date range calculations - return timestamps instead of Date objects to avoid reference issues
 	const getDateRange = () => {

@@ -333,10 +333,47 @@ services:
 
 ## Environment Variables
 
-For production deployment, you may need to set:
+### Application Configuration
 
-- `NODE_ENV`: Set to "production"
+The following environment variables can be configured for deployment:
+
+- `VITE_REGISTRATION_SECURE_KEY`: Security key required for user registration (default: "2019+")
+- `VITE_WEAR_AND_TEAR_RATE`: Wear and tear rate in LKR per km for expense calculations (default: 15)
+- `NODE_ENV`: Set to "production" for production deployment
 - `POCKETBASE_URL`: URL of your PocketBase instance (if different from default)
+
+### Docker Deployment
+
+For Docker deployment, you can set environment variables in your `docker-compose.yml`:
+
+```yaml
+services:
+  taxi-buddy:
+    image: ghcr.io/your-username/taxi-buddy:latest
+    environment:
+      - VITE_REGISTRATION_SECURE_KEY=your-secure-key-here
+      - VITE_WEAR_AND_TEAR_RATE=15
+      - NODE_ENV=production
+      - POCKETBASE_URL=http://pocketbase:8090
+```
+
+### Local Development
+
+Create a `.env` file in the root directory:
+
+```bash
+# Environment Variables for Taxi Buddy
+# Security key for user registration
+VITE_REGISTRATION_SECURE_KEY=your-secure-key-here
+
+# Wear and tear rate in LKR per km  
+VITE_WEAR_AND_TEAR_RATE=15
+
+# PocketBase URL (optional - defaults to http://127.0.0.1:8090/)
+# POCKETBASE_URL=http://your-pocketbase-url:8090/
+```
+
+An `.env.example` file is provided as a template.
 
 ## Security Considerations
 
