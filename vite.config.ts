@@ -17,5 +17,22 @@ export default defineConfig({
 	],
 	preview: {
 		allowedHosts: getAllowedHosts()
+	},
+	build: {
+		rollupOptions: {
+			output: {
+				// Add content hash to filenames for better caching
+				assetFileNames: (assetInfo) => {
+					const info = assetInfo.name?.split('.');
+					const ext = info?.[info.length - 1];
+					if (ext && /\.(css|woff|woff2|ttf|eot|svg)$/.test(assetInfo.name || '')) {
+						return `assets/${ext}/[name]-[hash][extname]`;
+					}
+					return `assets/[name]-[hash][extname]`;
+				},
+				chunkFileNames: 'assets/js/[name]-[hash].js',
+				entryFileNames: 'assets/js/[name]-[hash].js'
+			}
+		}
 	}
 });
