@@ -309,16 +309,18 @@
 			{#if selectedPeriod === 'custom'}
 				<div class="flex flex-col sm:flex-row gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
 					<div class="flex flex-col">
-						<label class="text-sm font-medium text-gray-700 mb-1">Start Date</label>
+						<label for="startDate" class="text-sm font-medium text-gray-700 mb-1">Start Date</label>
 						<input 
+							id="startDate"
 							type="date" 
 							bind:value={customStartDate}
 							class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 						/>
 					</div>
 					<div class="flex flex-col">
-						<label class="text-sm font-medium text-gray-700 mb-1">End Date</label>
+						<label for="endDate" class="text-sm font-medium text-gray-700 mb-1">End Date</label>
 						<input 
+							id="endDate"
 							type="date" 
 							bind:value={customEndDate}
 							class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -373,12 +375,20 @@
 				{#if getTopExpenses(getFilteredExpenses()).length === 0}
 					<p class="text-gray-500 italic text-center py-8">No expenses in selected period</p>
 				{:else}
-					{#each getTopExpenses(getFilteredExpenses()) as expense}
-						<div class="flex justify-between items-center py-4 border-b border-gray-50 last:border-b-0">
-							<span class="text-gray-800 font-medium">{getCategoryName(expense.category_id)}</span>
-							<span class="text-red-600 font-bold">-{formatCurrency(expense.amount)}</span>
+					<div class="w-full">
+						<div class="space-y-2">
+							{#each getTopExpenses(getFilteredExpenses()) as expense}
+								<div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+									<div class="flex-1 min-w-0">
+										<p class="text-sm font-medium text-gray-800 truncate">{getCategoryName(expense.category_id)}</p>
+									</div>
+									<div class="ml-4 flex-shrink-0">
+										<p class="text-sm font-bold text-red-600">-{formatCurrency(expense.amount)}</p>
+									</div>
+								</div>
+							{/each}
 						</div>
-					{/each}
+					</div>
 				{/if}
 			</div>
 			
@@ -387,15 +397,21 @@
 				{#if getTopTrips().length === 0}
 					<p class="text-gray-500 italic text-center py-8">No trips in selected period</p>
 				{:else}
-					{#each getTopTrips() as trip}
-						<div class="flex justify-between items-center py-4 border-b border-gray-50 last:border-b-0">
-							<div class="flex-1">
-								<span class="text-gray-800 font-medium block">{trip.platform || 'Unknown Platform'}</span>
-								<span class="text-gray-500 text-sm">{new Date(trip.date).toLocaleDateString()}</span>
-							</div>
-							<span class="text-green-600 font-bold">+{formatCurrency((trip.fare || 0) + (trip.tips || 0))}</span>
+					<div class="w-full">
+						<div class="space-y-2">
+							{#each getTopTrips() as trip}
+								<div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+									<div class="flex-1 min-w-0">
+										<p class="text-sm font-medium text-gray-800 truncate">{trip.platform || 'Unknown Platform'}</p>
+										<p class="text-xs text-gray-500 mt-1">{new Date(trip.date).toLocaleDateString()}</p>
+									</div>
+									<div class="ml-4 flex-shrink-0">
+										<p class="text-sm font-bold text-green-600">+{formatCurrency((trip.fare || 0) + (trip.tips || 0))}</p>
+									</div>
+								</div>
+							{/each}
 						</div>
-					{/each}
+					</div>
 				{/if}
 			</div>
 		</div>
@@ -406,12 +422,20 @@
 				{#if getCategoryBreakdown(getFilteredExpenses()).length === 0}
 					<p class="text-gray-500 italic text-center py-8">No data in selected period</p>
 				{:else}
-					{#each getCategoryBreakdown(getFilteredExpenses()) as item}
-						<div class="flex justify-between items-center py-4 border-b border-gray-50 last:border-b-0">
-							<span class="text-gray-800 font-medium">{item.name}</span>
-							<span class="text-red-600 font-bold">-{formatCurrency(item.amount)}</span>
+					<div class="w-full">
+						<div class="space-y-2">
+							{#each getCategoryBreakdown(getFilteredExpenses()) as item}
+								<div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+									<div class="flex-1 min-w-0">
+										<p class="text-sm font-medium text-gray-800 truncate">{item.name}</p>
+									</div>
+									<div class="ml-4 flex-shrink-0">
+										<p class="text-sm font-bold text-red-600">-{formatCurrency(item.amount)}</p>
+									</div>
+								</div>
+							{/each}
 						</div>
-					{/each}
+					</div>
 				{/if}
 			</div>
 			
@@ -420,15 +444,21 @@
 				{#if getPlatformBreakdown().length === 0}
 					<p class="text-gray-500 italic text-center py-8">No trips in selected period</p>
 				{:else}
-					{#each getPlatformBreakdown() as platform}
-						<div class="flex justify-between items-center py-4 border-b border-gray-50 last:border-b-0">
-							<div class="flex-1">
-								<span class="text-gray-800 font-medium">{platform.name}</span>
-								<span class="text-gray-500 text-sm">{platform.trips} trips</span>
-							</div>
-							<span class="text-green-600 font-bold">+{formatCurrency(platform.earnings)}</span>
+					<div class="w-full">
+						<div class="space-y-2">
+							{#each getPlatformBreakdown() as platform}
+								<div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+									<div class="flex-1 min-w-0">
+										<p class="text-sm font-medium text-gray-800 truncate">{platform.name}</p>
+										<p class="text-xs text-gray-500 mt-1">{platform.trips} trips</p>
+									</div>
+									<div class="ml-4 flex-shrink-0">
+										<p class="text-sm font-bold text-green-600">+{formatCurrency(platform.earnings)}</p>
+									</div>
+								</div>
+							{/each}
 						</div>
-					{/each}
+					</div>
 				{/if}
 			</div>
 		</div>

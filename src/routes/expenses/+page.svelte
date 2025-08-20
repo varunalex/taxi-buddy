@@ -338,32 +338,32 @@
 			<!-- Table Section -->
 			<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 				<div class="overflow-x-auto">
-					<table class="w-full text-sm text-left text-gray-500">
+					<table class="w-full text-sm text-left text-gray-500 min-w-full">
 						<thead class="text-xs text-gray-700 uppercase bg-gray-50">
 							<tr>
-								<th scope="col" class="px-6 py-3">Date</th>
-								<th scope="col" class="px-6 py-3">Category</th>
-								<th scope="col" class="px-6 py-3">Amount</th>
-								<th scope="col" class="px-6 py-3">Description</th>
-								<th scope="col" class="px-6 py-3">Linked Trip</th>
-								<th scope="col" class="px-6 py-3">Actions</th>
+								<th scope="col" class="px-4 sm:px-6 py-3">Date</th>
+								<th scope="col" class="px-4 sm:px-6 py-3">Category</th>
+								<th scope="col" class="px-4 sm:px-6 py-3">Amount</th>
+								<th scope="col" class="px-4 sm:px-6 py-3 hidden md:table-cell">Description</th>
+								<th scope="col" class="px-4 sm:px-6 py-3 hidden sm:table-cell">Linked Trip</th>
+								<th scope="col" class="px-4 sm:px-6 py-3">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							{#each paginatedExpenses as expense}
 								<tr class="bg-white border-b hover:bg-gray-50">
-									<td class="px-6 py-4 whitespace-nowrap">
+									<td class="px-4 sm:px-6 py-4 whitespace-nowrap">
 										{new Date(expense.date).toLocaleDateString()}
 									</td>
-									<td class="px-6 py-4">
+									<td class="px-4 sm:px-6 py-4">
 										<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
 											{getCategoryName(expense.category_id)}
 										</span>
 									</td>
-									<td class="px-6 py-4 font-bold text-red-600">
+									<td class="px-4 sm:px-6 py-4 font-bold text-red-600">
 										-{formatCurrency(expense.amount)}
 									</td>
-									<td class="px-6 py-4">
+									<td class="px-4 sm:px-6 py-4 hidden md:table-cell">
 										{#if expense.description}
 											<div class="text-gray-600 max-w-xs truncate" title={expense.description}>
 												{expense.description}
@@ -372,24 +372,27 @@
 											<span class="text-gray-400">-</span>
 										{/if}
 									</td>
-									<td class="px-6 py-4">
+									<td class="px-4 sm:px-6 py-4 hidden sm:table-cell">
 										{#if expense.trip_id}
 											<span class="text-blue-600 text-sm">Yes</span>
 										{:else}
 											<span class="text-gray-400">No</span>
 										{/if}
 									</td>
-									<td class="px-6 py-4">
-										<div class="flex space-x-2">
-											<a href={`/expenses/${expense.id}`} class="text-blue-600 hover:text-blue-800 font-medium text-sm">
-												Edit
+									<td class="px-4 sm:px-6 py-4">
+										<div class="flex space-x-1 sm:space-x-2">
+											<a href={`/expenses/${expense.id}`} class="text-blue-600 hover:text-blue-800 font-medium text-sm" title="Edit">
+												<span class="hidden sm:inline">Edit</span>
+												<span class="sm:hidden">✏️</span>
 											</a>
 											<button
 												type="button"
 												onclick={() => deleteExpense(expense.id)}
-												class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition-colors"
+												class="px-2 py-1 sm:px-3 sm:py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition-colors"
+												title="Delete"
 											>
-												Delete
+												<span class="hidden sm:inline">Delete</span>
+												<span class="sm:hidden">🗑️</span>
 											</button>
 										</div>
 									</td>

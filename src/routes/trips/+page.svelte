@@ -90,6 +90,30 @@ function getProfitPercentage(trip: Trip): number {
   
   return ((paid - expenses) / paid) * 100;
 }
+
+// Global wear and tear rate (LKR per km)
+const WEAR_AND_TEAR_RATE = Number(import.meta.env.VITE_WEAR_AND_TEAR_RATE) || 15;
+
+// Calculate wear and tear cost for a single trip
+function getWearAndTearCost(trip: Trip): number {
+  return (trip.distance || 0) * WEAR_AND_TEAR_RATE;
+}
+
+// Calculate profit after wear and tear
+function getProfitAfterWearAndTear(trip: Trip): number {
+  return getTripProfit(trip) - getWearAndTearCost(trip);
+}
+
+// Calculate profit percentage after wear and tear
+function getProfitPercentageAfterWearAndTear(trip: Trip): number {
+  const paid = getTripPaid(trip);
+  const expenses = getTripExpenses(trip.id);
+  const wearAndTear = getWearAndTearCost(trip);
+  
+  if (paid === 0) return 0; // If no income, percentage is 0
+  
+  return ((paid - expenses - wearAndTear) / paid) * 100;
+}
 	
 	function viewTripDetails(trip: Trip) {
 		selectedTrip = trip;
@@ -162,11 +186,11 @@ function getProfitPercentage(trip: Trip): number {
 		}
 	}
 	
-	function getPlatformName(platformId: string): string {
-		if (!platformId) return 'Unknown';
-		const platform = platforms.find(p => p.id === platformId);
-		return platform?.name || platformId;
-	}
+function getPlatformName(platformId: string): string {
+	if (!platformId) return 'Unknown';
+	const platform = platforms.find(p => p.id === platformId);
+	return platform?.name || 'Unknown Platform';
+}
 	
 	// Load trips on component mount
 	$effect(() => {
@@ -269,69 +293,79 @@ function getProfitPercentage(trip: Trip): number {
 		</div>
 		
 		<!-- Table Section -->
-		<Table class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-			<TableHead class="text-xs text-gray-700 uppercase bg-gray-50">
-				<TableHeadCell class="px-6 py-3">Date</TableHeadCell>
-				<TableHeadCell class="px-6 py-3">Platform</TableHeadCell>
-				<TableHeadCell class="px-6 py-3">Distance</TableHeadCell>
-				<TableHeadCell class="px-6 py-3">Paid</TableHeadCell>
-				<TableHeadCell class="px-6 py-3">Expenses</TableHeadCell>
-						<TableHeadCell class="px-6 py-3">Profit</TableHeadCell>
-						<TableHeadCell class="px-6 py-3">Actions</TableHeadCell>
-			</TableHead>
-			<TableBody>
-				{#each paginatedTrips as trip}
-					<TableBodyRow class="bg-white border-b hover:bg-gray-50">
-						<TableBodyCell class="px-6 py-4 whitespace-nowrap">
-							{new Date(trip.date).toLocaleDateString()}
-						</TableBodyCell>
-						<TableBodyCell class="px-6 py-4">
-							<span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-								{getPlatformName(trip.platform)}
-							</span>
-						</TableBodyCell>
-						<TableBodyCell class="px-6 py-4">{formatDistance(trip.distance)}</TableBodyCell>
-						<TableBodyCell class="px-6 py-4 font-medium text-green-600">
-							{formatCurrency(getTripPaid(trip))}
-						</TableBodyCell>
-						<TableBodyCell class="px-6 py-4 font-medium text-red-600">
-							{formatCurrency(getTripExpenses(trip.id))}
-						</TableBodyCell>
-						<TableBodyCell class="px-6 py-4 font-bold {getTripProfit(trip) >= 0 ? 'text-green-600' : 'text-red-600'}">
-							{formatCurrency(getTripProfit(trip))}
-							<br>
-							<span class="text-xs font-normal {getProfitPercentage(trip) >= 50 ? 'text-green-600' : 'text-red-600'}">
-								({getProfitPercentage(trip).toFixed(1)}% profit)
-							</span>
-						</TableBodyCell>
-						<TableBodyCell class="px-6 py-4 flex gap-2">
-							<button
-								type="button"
-								on:click={() => viewTripDetails(trip)}
-								class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors"
-							>
-								View
-							</button>
-							<a
-								href={`/trips/${trip.id}`}
-								class="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors no-underline"
-							>
-								Edit
-							</a>
-							<button
-								type="button"
-								on:click={() => deleteTrip(trip.id)}
-								class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition-colors"
-							>
-								Delete
-							</button>
-						</TableBodyCell>
-					</TableBodyRow>
-				{/each}
-			</TableBody>
-		</Table>
+		<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+			<div class="overflow-x-auto">
+				<Table class="min-w-full">
+					<TableHead class="text-xs text-gray-700 uppercase bg-gray-50">
+						<TableHeadCell class="px-4 py-3 sm:px-6">Date</TableHeadCell>
+						<TableHeadCell class="px-4 py-3 sm:px-6 hidden sm:table-cell">Platform</TableHeadCell>
+						<TableHeadCell class="px-4 py-3 sm:px-6">Distance</TableHeadCell>
+						<TableHeadCell class="px-4 py-3 sm:px-6">Paid</TableHeadCell>
+						<TableHeadCell class="px-4 py-3 sm:px-6 hidden md:table-cell">Expenses</TableHeadCell>
+						<TableHeadCell class="px-4 py-3 sm:px-6">Profit</TableHeadCell>
+						<TableHeadCell class="px-4 py-3 sm:px-6">Actions</TableHeadCell>
+					</TableHead>
+					<TableBody>
+						{#each paginatedTrips as trip}
+							<TableBodyRow class="bg-white border-b hover:bg-gray-50">
+								<TableBodyCell class="px-4 py-4 sm:px-6 whitespace-nowrap text-sm">
+									{new Date(trip.date).toLocaleDateString()}
+								</TableBodyCell>
+								<TableBodyCell class="px-4 py-4 sm:px-6 hidden sm:table-cell">
+									<span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+										{getPlatformName(trip.platform)}
+									</span>
+								</TableBodyCell>
+								<TableBodyCell class="px-4 py-4 sm:px-6 text-sm">
+									{formatDistance(trip.distance)}
+								</TableBodyCell>
+								<TableBodyCell class="px-4 py-4 sm:px-6 font-medium text-green-600 text-sm">
+									{formatCurrency(getTripPaid(trip))}
+								</TableBodyCell>
+								<TableBodyCell class="px-4 py-4 sm:px-6 font-medium text-red-600 text-sm hidden md:table-cell">
+									{formatCurrency(getTripExpenses(trip.id))}
+								</TableBodyCell>
+								<TableBodyCell class="px-4 py-4 sm:px-6 font-bold text-sm {getTripProfit(trip) >= 0 ? 'text-green-600' : 'text-red-600'}">
+									{formatCurrency(getTripProfit(trip))}
+									<br>
+									<span class="text-xs font-normal {getProfitPercentage(trip) >= 50 ? 'text-green-600' : 'text-red-600'}">
+										({getProfitPercentage(trip).toFixed(1)}%)
+									</span>
+								</TableBodyCell>
+								<TableBodyCell class="px-4 py-4 sm:px-6">
+									<div class="flex gap-1 sm:gap-2 flex-wrap">
+										<button
+											type="button"
+											on:click={() => viewTripDetails(trip)}
+											class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors"
+											title="View details"
+										>
+											👁️
+										</button>
+										<a
+											href={`/trips/${trip.id}`}
+											class="px-2 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors no-underline"
+											title="Edit trip"
+										>
+											✏️
+										</a>
+										<button
+											type="button"
+											on:click={() => deleteTrip(trip.id)}
+											class="px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded transition-colors"
+											title="Delete trip"
+										>
+											🗑️
+										</button>
+									</div>
+								</TableBodyCell>
+							</TableBodyRow>
+						{/each}
+					</TableBody>
+				</Table>
+			</div>
 			
-		<!-- Pagination -->
+			<!-- Pagination -->
 		{#if totalPages > 1}
 			<div class="px-6 py-4 border-t border-gray-200">
 				<div class="flex justify-center items-center gap-2">
@@ -359,9 +393,11 @@ function getProfitPercentage(trip: Trip): number {
 				</div>
 			</div>
 		{/if}
+		</div>
 	{/if}
-	
-	<!-- Trip Details Modal -->
+</div>
+
+<!-- Trip Details Modal -->
 	{#if showTripModal && selectedTrip}
 		<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
 			<div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -447,9 +483,25 @@ function getProfitPercentage(trip: Trip): number {
 								<span class="text-sm font-medium text-red-600">{formatCurrency(getTripExpenses(selectedTrip.id))}</span>
 							</div>
 							<div class="flex justify-between items-center">
+								<span class="text-sm text-gray-600">Wear & Tear Cost:</span>
+								<span class="text-sm font-medium text-orange-600">-{formatCurrency(getWearAndTearCost(selectedTrip))}</span>
+							</div>
+							<div class="flex justify-between items-center">
 								<span class="text-sm text-gray-600">Profit Percentage:</span>
 								<span class="text-sm font-medium {getProfitPercentage(selectedTrip) >= 50 ? 'text-green-600' : 'text-red-600'}">
 									{getProfitPercentage(selectedTrip).toFixed(1)}% profit
+								</span>
+							</div>
+							<div class="flex justify-between items-center">
+								<span class="text-sm text-gray-600">Profit after Wear & Tear:</span>
+								<span class="text-sm font-medium {getProfitAfterWearAndTear(selectedTrip) >= 0 ? 'text-green-600' : 'text-red-600'}">
+									{formatCurrency(getProfitAfterWearAndTear(selectedTrip))}
+								</span>
+							</div>
+							<div class="flex justify-between items-center">
+								<span class="text-sm text-gray-600">Profit % after Wear & Tear:</span>
+								<span class="text-sm font-medium {getProfitPercentageAfterWearAndTear(selectedTrip) >= 50 ? 'text-green-600' : 'text-red-600'}">
+									{getProfitPercentageAfterWearAndTear(selectedTrip).toFixed(1)}% profit
 								</span>
 							</div>
 							<div class="flex justify-between items-center pt-2 border-t border-gray-300">
@@ -475,4 +527,3 @@ function getProfitPercentage(trip: Trip): number {
 			</div>
 		</div>
 	{/if}
-</div>
