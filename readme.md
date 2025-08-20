@@ -1,4 +1,4 @@
-# Taxi Buddy - Driver Companion App
+# Taxi Buddy - Driver Companion App (AI generated)
 
 A comprehensive web application for taxi drivers to track their income and expenses, built with SvelteKit 5 and TypeScript.
 
