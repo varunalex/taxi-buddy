@@ -339,6 +339,7 @@ The following environment variables can be configured for deployment:
 
 - `VITE_REGISTRATION_SECURE_KEY`: Security key required for user registration (default: "2019+")
 - `VITE_WEAR_AND_TEAR_RATE`: Wear and tear rate in LKR per km for expense calculations (default: 15)
+- `VITE_ALLOWED_HOSTS`: Comma-separated list of hosts allowed for Vite preview mode (default: empty)
 - `NODE_ENV`: Set to "production" for production deployment
 - `POCKETBASE_URL`: URL of your PocketBase instance (if different from default)
 
