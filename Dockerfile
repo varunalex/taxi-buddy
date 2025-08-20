@@ -24,8 +24,8 @@ COPY --from=builder /app/.svelte-kit/output/server ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 
-# Expose port
-EXPOSE 3000
+# Expose port (Vite preview runs on 4173 by default)
+EXPOSE 4173
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
