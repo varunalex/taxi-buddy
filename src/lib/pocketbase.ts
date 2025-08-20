@@ -48,6 +48,9 @@ export interface Expense {
   driver_id: string;
   created: string;
   updated: string;
+  expand?: {
+    category_id?: ExpenseCategory;
+  };
 }
 
 export interface Platform {

@@ -50,10 +50,11 @@
 			});
 			platforms = platformRecords as unknown as Platform[];
 			
-			// Load expenses for the current user
+			// Load expenses for the current user with category expansion
 			const expenseRecords = await pb.collection('expenses').getFullList({
 				filter: `driver_id = "${pb.authStore.model?.id}"`,
-				sort: '-date'
+				sort: '-date',
+				expand: 'category_id'
 			});
 			expenses = expenseRecords as unknown as Expense[];
 			
@@ -190,6 +191,15 @@ function getPlatformName(platformId: string): string {
 	if (!platformId) return 'Unknown';
 	const platform = platforms.find(p => p.id === platformId);
 	return platform?.name || 'Unknown Platform';
+}
+
+function getExpenseCategoryName(expense: Expense): string {
+	if (!expense.expand?.category_id) {
+		console.log('Category expansion failed for expense:', expense.id, 'category_id:', expense.category_id);
+		console.log('Expand object:', expense.expand);
+		return 'Unknown Category';
+	}
+	return expense.expand.category_id.name;
 }
 	
 	// Load trips on component mount
@@ -454,7 +464,7 @@ function getPlatformName(platformId: string): string {
 								{#each selectedTripExpenses as expense}
 									<div class="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
 										<div>
-											<p class="text-sm font-medium text-gray-900">{expense.description}</p>
+											<p class="text-sm font-medium text-gray-900">{getExpenseCategoryName(expense)}</p>
 											<p class="text-xs text-gray-500">{new Date(expense.date).toLocaleDateString()}</p>
 										</div>
 										<p class="text-sm font-medium text-red-600">{formatCurrency(expense.amount)}</p>
