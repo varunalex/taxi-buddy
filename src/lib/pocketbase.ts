@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 
 // PocketBase instance URL (replace with your actual URL)
-export const POCKETBASE_URL = 'http://192.168.31.205:8090/';
+export const POCKETBASE_URL = import.meta.env.VITE_POCKETBASE_URL || 'http://192.168.31.205:8090/';
 
 // Create PocketBase client instance
 export const pb = new PocketBase(POCKETBASE_URL);
